@@ -4,6 +4,10 @@ import io.github.stellardeca.lazyime.core.lib.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
+fun decodeResponse(json: String): ClientResponse {
+    return Json.decodeFromString<ClientResponse>(json)
+}
+
 /// 原始 json 解析器
 /// 根据 success 字段解析为 ClientResponse 子类
 object ClientResponseSerializer : JsonContentPolymorphicSerializer<ClientResponse>(ClientResponse::class) {
