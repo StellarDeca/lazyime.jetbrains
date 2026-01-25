@@ -8,8 +8,11 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import io.github.stellardeca.lazyime.core.lib.*
+import java.text.MessageFormat
+import java.util.ResourceBundle
 
 private const val NOTIFICATION_GROUP_ID = "lazyime.jetbrains"
+private const val BUNDLE = "messages.MyBundle"
 
 /// 获取编辑的文件类型 不在编辑窗口中时为null
 fun getLanguage(project: Project, document: Document): String {
@@ -45,25 +48,30 @@ fun getCursor(editor: Editor): Cursor {
 }
 
 /// Info 弹窗 通知
-fun notifyInfo(message: String) {
+fun notifyInfo(key: String, vararg params: Any?) {
     NotificationGroupManager.getInstance()
         .getNotificationGroup(NOTIFICATION_GROUP_ID)
-        .createNotification(message, NotificationType.INFORMATION)
+        .createNotification(messageFormat(key, params), NotificationType.INFORMATION)
         .notify(null)
 }
 
 /// Warn 弹窗 通知
-fun notifyWarning(message: String) {
+fun notifyWarning(key: String, vararg params: Any?) {
     NotificationGroupManager.getInstance()
         .getNotificationGroup(NOTIFICATION_GROUP_ID)
-        .createNotification(message, NotificationType.WARNING)
+        .createNotification(messageFormat(key, params), NotificationType.WARNING)
         .notify(null)
 }
 
 /// Error 弹窗 通知
-fun notifyError(message: String) {
+fun notifyError(key: String, vararg params: Any?) {
     NotificationGroupManager.getInstance()
         .getNotificationGroup(NOTIFICATION_GROUP_ID)
-        .createNotification(message, NotificationType.ERROR)
+        .createNotification(messageFormat(key, params), NotificationType.ERROR)
         .notify(null)
+}
+
+private fun messageFormat(key: String, vararg params: Any?): String {
+    val resource = ResourceBundle.getBundle(BUNDLE)
+    return MessageFormat.format(resource.getString(key), *params)
 }
