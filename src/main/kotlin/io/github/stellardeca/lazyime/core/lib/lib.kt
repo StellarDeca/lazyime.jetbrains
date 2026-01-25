@@ -33,6 +33,11 @@ sealed class Result<out T> {
 
     data class Err(val message: String) : Result<Nothing>()
 
+    fun unwrap(): T = when (this) {
+        is Ok -> value
+        is Err -> throw Exception(message)
+    }
+
     inline fun <R> map(transform: (T) -> R): Result<R> =
         when (this) {
             is Ok -> Ok(transform(value))
