@@ -12,6 +12,7 @@ private const val PLUGIN_ID = "io.github.StellarDeca.lazyime"
 private const val SERVER_NAME = "LazyInputSwitcher"
 
 class ServerStartException(message: String) : RuntimeException(message)
+class ServerNotFoundException(message: String) : RuntimeException(message)
 
 object Process {
 
@@ -46,7 +47,7 @@ object Process {
         val serverPath = pluginPath.resolve("bin").resolve(fileName)
 
         if (!serverPath.toFile().exists()) {
-            throw ServerStartException("Server $serverPath not found")
+            throw ServerNotFoundException("Server $serverPath not found")
         }
         return serverPath
     }
