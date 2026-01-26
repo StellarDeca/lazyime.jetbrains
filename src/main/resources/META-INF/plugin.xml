@@ -5,4 +5,8 @@
     </vendor>
 
     <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <editorFactoryListener implementation="io.github.stellardeca.lazyime.ide.EditorListener"/>
+    </extensions>
 </idea-plugin>
