@@ -105,7 +105,6 @@ object Server {
     private suspend fun setCid() {
         val req = analyze(cid, "", "Kotlin", Cursor(0, 0))
         val res = sendAndReceive(req)
-        println("Set cid: $res")
         cid = res.cid
     }
 }
