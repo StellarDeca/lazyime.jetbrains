@@ -8,20 +8,6 @@ fun decodeResponse(json: String): ClientResponse {
     return Json.decodeFromString<ClientResponse>(json)
 }
 
-/// 原始 json 解析器
-/// 根据 success 字段解析为 ClientResponse 子类
-object ClientResponseSerializer : JsonContentPolymorphicSerializer<ClientResponse>(ClientResponse::class) {
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<ClientResponse> {
-        val jsonObject = element.jsonObject
-        // 核心逻辑：根据 success 字段的布尔值决定解析器
-        return if (jsonObject["success"]?.jsonPrimitive?.booleanOrNull == true) {
-            OkResponse.serializer()
-        } else {
-            ErrResponse.serializer()
-        }
-    }
-}
-
 /// result 字段解析器
 /// 根据 result 字段内容 自动解析 result 字段到 ResponseResult 子类
 object ResponseResultSerializer : JsonContentPolymorphicSerializer<ResponseResult>(ResponseResult::class) {
@@ -36,24 +22,13 @@ object ResponseResultSerializer : JsonContentPolymorphicSerializer<ResponseResul
     }
 }
 
-@Serializable(with = ClientResponseSerializer::class)
-sealed class ClientResponse {
-    abstract val cid: Int
-}
-
 @Serializable
-data class OkResponse(
-    override val cid: Int,
-    val success: Boolean = true, // 保持字段存在以匹配 JSON
-    val result: ResponseResult
-) : ClientResponse()
-
-@Serializable
-data class ErrResponse(
-    override val cid: Int,
-    val success: Boolean = false,
-    val error: String
-) : ClientResponse()
+data class ClientResponse(
+    val cid: Int,
+    val success: Boolean,
+    val error: String?,
+    val result: ResponseResult?
+)
 
 @Serializable(with = ResponseResultSerializer::class)
 sealed interface ResponseResult

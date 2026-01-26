@@ -23,39 +23,42 @@ object Server {
     /// Analyze 请求
     suspend fun analyze(code: String, lang: String, cursor: Cursor): GrammarMode {
         val req = analyze(cid, code, lang, cursor)
-        return when (val res = sendAndReceive(req)) {
-            is OkResponse -> when (val r = res.result) {
+        val res = sendAndReceive(req)
+        return if (res.success) {
+            when (val r = res.result) {
                 is AnalyzeResult -> r.grammar
-                else -> throw ProtocolException("Expect AnalyzeResult, but got ${r::class.simpleName}")
+                else -> throw ProtocolException("Expect AnalyzeResult, but got $r")
             }
-
-            is ErrResponse -> throw RemoteException("Error request ${res.error}")
+        } else {
+            throw RemoteException("Error request ${res.error}")
         }
     }
 
     /// MethodOnly 请求
     suspend fun methodOnly(target: MethodMode): Boolean {
         val req = methodOnly(cid, target)
-        return when (val res = sendAndReceive(req)) {
-            is OkResponse -> when (val r = res.result) {
+        val res = sendAndReceive(req)
+        return if (res.success) {
+            when (val r = res.result) {
                 is MethodOnlyResult -> r.method == target
-                else -> throw ProtocolException("Expect MethodOnlyResult, but got ${r::class.simpleName}")
+                else -> throw ProtocolException("Expect MethodOnlyResult, but got $r")
             }
-
-            is ErrResponse -> throw RemoteException("Error request ${res.error}")
+        } else {
+            throw RemoteException("Error request ${res.error}")
         }
     }
 
     /// Switch 请求
     suspend fun switch(code: String, lang: String, cursor: Cursor): Pair<GrammarMode, MethodMode> {
         val req = switch(cid, code, lang, cursor)
-        return when (val res = sendAndReceive(req)) {
-            is OkResponse -> when (val r = res.result) {
+        val res = sendAndReceive(req)
+        return if (res.success) {
+            when (val r = res.result) {
                 is SwitchResult -> Pair(r.grammar, r.method)
-                else -> throw ProtocolException("Expect SwitchResult, but got ${r::class.simpleName}")
+                else -> throw ProtocolException("Expect SwitchResult, but got $r")
             }
-
-            is ErrResponse -> throw RemoteException("Error request ${res.error}")
+        } else {
+            throw RemoteException("Error request ${res.error}")
         }
     }
 
@@ -88,7 +91,13 @@ object Server {
 
         when (val r = connection.readMessage()) {
             is Result.Err -> throw ConnectionException(r.message)
-            is Result.Ok -> decodeResponse(r.value)
+            is Result.Ok -> {
+                try {
+                    decodeResponse(r.value)
+                } catch (e: Exception) {
+                    throw ProtocolException("Could not decode response. Req: $req, Error: $e")
+                }
+            }
         }
     }
 
