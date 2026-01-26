@@ -18,7 +18,7 @@ class EditorListener : EditorFactoryListener {
         if (event.editor.editorKind == EditorKind.MAIN_EDITOR) {
             // 将 CursorListener 直接挂在当前 editor 的 caretModel 上
             // 绑定 project 生命周期
-//            event.editor.caretModel.addCaretListener(CursorListener(), service)
+            event.editor.caretModel.addCaretListener(CursorListener(), service)
             editor.document.addDocumentListener(DocumentListener(project, editor), service)
         }
     }
