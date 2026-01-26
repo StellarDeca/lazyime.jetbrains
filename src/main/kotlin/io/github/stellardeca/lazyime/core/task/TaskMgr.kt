@@ -1,5 +1,6 @@
 package io.github.stellardeca.lazyime.core.task
 
+import io.github.stellardeca.lazyime.core.log.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -71,7 +72,7 @@ object TaskMgr {
 
     private fun handleError(e: Throwable) {
         // 仅作日志记录
-        println("[TaskError] ${e.stackTraceToString()}")
+        Logger.warn("Error with task", e)
     }
 }
 
