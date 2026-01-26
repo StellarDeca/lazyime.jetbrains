@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.nio.file.Path
 
-private const val PLUGIN_ID = "io.github.StellarDeca.lazyime"
+private const val PLUGIN_ID = "io.github.stellardeca.lazyime"
 private const val SERVER_NAME = "LazyInputSwitcher"
 
 class ServerStartException(message: String) : RuntimeException(message)
