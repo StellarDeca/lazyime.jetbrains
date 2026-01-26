@@ -23,17 +23,4 @@ class EditorListener : EditorFactoryListener {
             editor.document.addDocumentListener(DocumentListener(project, editor), service)
         }
     }
-
-    /// editor 销毁 一并销毁挂载的监听器
-    override fun editorReleased(event: EditorFactoryEvent) {
-        val editor = event.editor
-        val project = editor.project ?: return
-
-        // 实例化 service
-        project.getService(LazyimeProjectService::class.java)
-        if (event.editor.editorKind == EditorKind.MAIN_EDITOR) {
-            editor.caretModel.removeCaretListener(CursorListener())
-            editor.document.removeDocumentListener(DocumentListener(project, editor))
-        }
-    }
 }
