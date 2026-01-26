@@ -30,13 +30,14 @@ object TaskMgr {
 
     /// 任务提交方法
     // 直接在 ui 线程中可以直接调用
-    fun submit(type: TaskType, task: suspend () -> Unit) {
+    fun submit(name: String, task: suspend () -> Unit) {
         // 在协程 线程中进行 任务 提交操作
         // 防止 worker 与 submit 静态
         scope.launch {
             mutex.withLock {
                 // 如果任务已存在，
                 // 先删除旧的 再存入新的以保证在队尾
+                val type = TaskType(name)
                 pendingTasks.remove(type)
                 pendingTasks[type] = task
             }
