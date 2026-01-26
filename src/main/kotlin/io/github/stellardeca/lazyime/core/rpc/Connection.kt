@@ -45,7 +45,7 @@ class Connection(
             Result.Ok(Unit)
         } catch (e: Exception) {
             close()
-            Result.Err("$e")
+            Result.Err("Failed to send message: $message, $e")
         }
     }
 
@@ -57,7 +57,7 @@ class Connection(
             Result.Ok(String(bytes, Charsets.UTF_8))
         } catch (e: Exception) {
             close()
-            Result.Err("$e")
+            Result.Err("Failed to send message: $e")
         }
     }
 

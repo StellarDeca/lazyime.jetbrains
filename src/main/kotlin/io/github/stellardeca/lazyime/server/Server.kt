@@ -27,10 +27,10 @@ object Server {
         return if (res.success) {
             when (val r = res.result) {
                 is AnalyzeResult -> r.grammar
-                else -> throw ProtocolException("Expect AnalyzeResult, but got $r")
+                else -> throw ProtocolException("Expect AnalyzeResult, but got $res. Req: $req")
             }
         } else {
-            throw RemoteException("Error request ${res.error}")
+            throw RemoteException("Error request. Req: ${req.toJson()}, Error: ${res.error}")
         }
     }
 
@@ -41,10 +41,10 @@ object Server {
         return if (res.success) {
             when (val r = res.result) {
                 is MethodOnlyResult -> r.method == target
-                else -> throw ProtocolException("Expect MethodOnlyResult, but got $r")
+                else -> throw ProtocolException("Expect MethodOnlyResult, but got $res. Req: $req")
             }
         } else {
-            throw RemoteException("Error request ${res.error}")
+            throw RemoteException("Error request. Req: ${req.toJson()}, Error: ${res.error}")
         }
     }
 
@@ -55,10 +55,10 @@ object Server {
         return if (res.success) {
             when (val r = res.result) {
                 is SwitchResult -> Pair(r.grammar, r.method)
-                else -> throw ProtocolException("Expect SwitchResult, but got $r")
+                else -> throw ProtocolException("Expect SwitchResult, but got $res. Req: $req")
             }
         } else {
-            throw RemoteException("Error request ${res.error}")
+            throw RemoteException("Error request. Req: ${req.toJson()}, Error: ${res.error}")
         }
     }
 
@@ -67,7 +67,7 @@ object Server {
         val req = exit(cid)
         when (val r = connection.sendMessage(req.toJson())) {
             is Result.Ok -> Unit
-            is Result.Err -> throw ConnectionException("Unexpected Response")
+            is Result.Err -> throw ConnectionException("Failed to send server exit command. Req: $req")
         }
     }
 
@@ -105,6 +105,7 @@ object Server {
     private suspend fun setCid() {
         val req = analyze(cid, "", "Kotlin", Cursor(0, 0))
         val res = sendAndReceive(req)
+        println("Set cid: $res")
         cid = res.cid
     }
 }
