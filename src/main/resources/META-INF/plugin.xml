@@ -7,6 +7,17 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <editorFactoryListener implementation="io.github.stellardeca.lazyime.ide.EditorListener"/>
+        <editorFactoryListener implementation="io.github.stellardeca.lazyime.ide.editor.EditorListener"/>
+        <applicationService serviceImplementation="io.github.stellardeca.lazyime.ide.settings.SettingsState"/>
+
+        <applicationConfigurable
+                instance="io.github.stellardeca.lazyime.ide.settings.Configurable"
+                id="io.github.stellardeca.lazyime.settings"
+                displayName="Lazyime"
+        />
     </extensions>
+    <projectListeners>
+        <listener class="io.github.stellardeca.lazyime.ide.toolwindow.ToolWindowsListener"
+                  topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
+    </projectListeners>
 </idea-plugin>
