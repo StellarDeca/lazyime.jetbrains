@@ -1,8 +1,9 @@
-package io.github.stellardeca.lazyime.ide
+package io.github.stellardeca.lazyime.ide.editor
 
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
-import io.github.stellardeca.lazyime.core.lib.*
+import io.github.stellardeca.lazyime.core.lib.GrammarMode
+import io.github.stellardeca.lazyime.core.lib.MethodMode
 import io.github.stellardeca.lazyime.core.task.TaskMgr
 import io.github.stellardeca.lazyime.server.Server
 

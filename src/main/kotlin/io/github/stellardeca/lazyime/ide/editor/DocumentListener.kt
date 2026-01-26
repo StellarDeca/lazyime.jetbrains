@@ -1,11 +1,9 @@
-package io.github.stellardeca.lazyime.ide
+package io.github.stellardeca.lazyime.ide.editor
 
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.openapi.editor.Editor
 import io.github.stellardeca.lazyime.core.lib.GrammarMode
 import io.github.stellardeca.lazyime.core.lib.MethodMode

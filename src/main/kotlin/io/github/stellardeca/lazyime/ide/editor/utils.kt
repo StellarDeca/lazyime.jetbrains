@@ -1,4 +1,4 @@
-package io.github.stellardeca.lazyime.ide
+package io.github.stellardeca.lazyime.ide.editor
 
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
