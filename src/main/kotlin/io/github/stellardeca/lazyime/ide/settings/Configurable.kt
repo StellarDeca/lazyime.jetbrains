@@ -5,6 +5,8 @@ import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import io.github.stellardeca.lazyime.core.lib.MethodMode
+import io.github.stellardeca.lazyime.core.task.TaskMgr
+import io.github.stellardeca.lazyime.server.Process
 import javax.swing.JComponent
 
 class Configurable : SearchableConfigurable {
@@ -46,6 +48,26 @@ class Configurable : SearchableConfigurable {
                             getter = { prop.get() },
                             setter = { it?.let { value -> prop.set(value) } }
                         )
+                    }
+                }
+            }
+
+            group(Language.message("settings.group.server")) {
+                val status = try {
+                    Process.findServer()
+                    Language.message("settings.server.install")
+                } catch (_: Exception) {
+                    Language.message("settings.server.uninstall")
+                }
+                row {
+                    label(status)
+                    val text = if (status == Language.message("settings.server.install")) {
+                        Language.message("settings.server.button.reinstall")
+                    } else {
+                        Language.message("settings.server.button.install")
+                    }
+                    button(text) {
+                        TaskMgr.submit("InstallServer") { Process.installServer() }
                     }
                 }
             }

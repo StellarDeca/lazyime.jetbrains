@@ -4,7 +4,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.util.xmlb.XmlSerializerUtil
 import io.github.stellardeca.lazyime.core.lib.MethodMode
-import kotlin.reflect.KMutableProperty1
 
 /// 设为 Application 级别
 /// 设置全局通用
@@ -12,6 +11,7 @@ import kotlin.reflect.KMutableProperty1
 class SettingsState : PersistentStateComponent<SettingsState> {
 
     // 保存的设置字段
+    /// IDE 工具窗口 默认输入法 设置
     var runWindowMethod: MethodMode = MethodMode.English
     var projectWindowMethod: MethodMode = MethodMode.English
     var commitWindowMethod: MethodMode = MethodMode.English
