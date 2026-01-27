@@ -14,14 +14,14 @@ class CursorListener : CaretListener {
         val editor = event.editor
         val project = editor.project ?: return
         val doc = editor.document
+        // 在 ui 线程中 准备数据
+        val code = doc.text
+        val lang = getLanguage(project, doc)
+        val cursor = getCursor(editor)
 
         TaskMgr.submit("CursorListener") {
             /// 仅仅在 grammar 变化时 对输入法进行切换
-            val grammar = Server.analyze(
-                doc.text,
-                getLanguage(project, doc),
-                getCursor(editor)
-            )
+            val grammar = Server.analyze(code, lang, cursor)
             val method = when (grammar) {
                 GrammarMode.Code -> MethodMode.English
                 GrammarMode.Comment -> MethodMode.Native

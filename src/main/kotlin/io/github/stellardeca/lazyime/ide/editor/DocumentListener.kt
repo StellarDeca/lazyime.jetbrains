@@ -17,13 +17,13 @@ class DocumentListener(
     override fun documentChanged(event: DocumentEvent) {
         val doc: Document = event.document
         // 处理文本变更
+        // 在 ui 线程中 准备数据
+        val code = doc.text
+        val lang = getLanguage(project, doc)
+        val cursor = getCursor(editor)
         TaskMgr.submit("DocumentListener") {
             /// 仅仅在 grammar 变化时 对输入法进行切换
-            val grammar = Server.analyze(
-                doc.text,
-                getLanguage(project, doc),
-                getCursor(editor)
-            )
+            val grammar = Server.analyze(code, lang, cursor)
             val method = when (grammar) {
                 GrammarMode.Code -> MethodMode.English
                 GrammarMode.Comment -> MethodMode.Native
