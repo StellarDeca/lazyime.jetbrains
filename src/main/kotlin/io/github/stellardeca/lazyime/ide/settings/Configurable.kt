@@ -9,7 +9,9 @@ import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import io.github.stellardeca.lazyime.core.lib.MethodMode
+import io.github.stellardeca.lazyime.core.task.TaskMgr
 import io.github.stellardeca.lazyime.server.Process
+import io.github.stellardeca.lazyime.server.Server
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -100,6 +102,9 @@ class Configurable : SearchableConfigurable {
             // 任务函数
             override fun run(indicator: ProgressIndicator) {
                 // 设置进度条的不确定状态
+                TaskMgr.submit("InstallServer") {
+                    Server.exit()
+                }
                 indicator.isIndeterminate = true
                 indicator.text = Language.message("server.download.start")
                 Process.installServer(indicator)
