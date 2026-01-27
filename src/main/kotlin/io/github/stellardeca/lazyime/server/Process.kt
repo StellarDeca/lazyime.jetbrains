@@ -2,20 +2,15 @@ package io.github.stellardeca.lazyime.server
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
-import com.intellij.openapi.progress.runBackgroundableTask
+import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.util.io.Decompressor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.nio.file.Path
 import com.intellij.util.io.HttpRequests
-import com.intellij.util.io.ZipUtil
-import com.intellij.util.io.delete
-import org.jetbrains.intellij.build.dependencies.BuildDependenciesUtil.extractTarGz
-import org.jetbrains.kotlinx.dataframe.api.toPath
 import java.nio.file.Files
-import kotlin.io.path.createDirectories
-import kotlin.io.resolve
 
 private const val PLUGIN_ID = "io.github.stellardeca.lazyime"
 private const val SERVER_NAME = "LazyInputSwitcher"
@@ -55,29 +50,39 @@ object Process {
         return serverPath
     }
 
-    suspend fun installServer(): Unit = withContext(Dispatchers.IO) {
+    fun installServer(indicator: ProgressIndicator?) {
         val name = when {
             SystemInfo.isWindows -> "windows-x86_64.zip"
             SystemInfo.isMac && SystemInfo.isAarch64 -> "macos-arm64.tar.gz"
-            SystemInfo.isMac -> "macos-intel-x86_64.tar.gz"
+            SystemInfo.isMac && !SystemInfo.isAarch64 -> "macos-intel-x86_64.tar.gz"
             else -> "linux-x86_64.tar.gz"
         }
-        "https://github.com/StellarDeca/LazyInputSwitcher/releases/latest/download/$name"
-        val binDir = getServerPath().parent
-        binDir.createDirectories()
-
+        val url = "https://github.com/StellarDeca/LazyInputSwitcher/releases/latest/download/$name"
+        val targetPath = getServerPath()
+        val binDir = targetPath.parent
+        if (!Files.exists(binDir)) Files.createDirectories(binDir)
         // 下载可执行文件并解压缩
-        val tempFile = Files.createTempFile("server-download", name)
-        if (name.endsWith(".zip")) {
-            ZipUtil.extract(tempFile.toAbsolutePath(), binDir, null)
-        } else {
-            // .tar.gz 需要使用不同的处理方式（见下文提示）
-            extractTarGz(tempFile, binDir, true)
-        }
-        // 清理临时文件并赋予可执行权限
-        tempFile.delete()
-        if (!SystemInfo.isWindows) {
-            getServerPath().toFile().setExecutable(true)
+        // 同时配置 进度
+        val tempFile = Files.createTempFile("lazyime-server", name)
+
+        try {
+            HttpRequests.request(url).saveToFile(tempFile, indicator)
+            if (name.endsWith(".zip")) {
+                Decompressor.Zip(tempFile).extract(binDir)
+            } else {
+                Decompressor.Tar(tempFile).extract(binDir)
+            }
+
+            // 设置 文件权限
+            if (!SystemInfo.isWindows) {
+                val file = targetPath.toFile()
+                if (file.exists()) {
+                    file.setExecutable(true)
+                }
+            }
+        } finally {
+            // 清理临时文件
+            Files.deleteIfExists(tempFile)
         }
     }
 

@@ -1,15 +1,26 @@
 package io.github.stellardeca.lazyime.ide.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
+import com.intellij.openapi.ui.Messages
 import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import io.github.stellardeca.lazyime.core.lib.MethodMode
 import io.github.stellardeca.lazyime.core.task.TaskMgr
 import io.github.stellardeca.lazyime.server.Process
+import javax.swing.JButton
 import javax.swing.JComponent
+import javax.swing.JLabel
 
 class Configurable : SearchableConfigurable {
+
+    /// 持有 UI 组件 的引用
+    private var serverLabel: JLabel? = null
+    private var serverButton: JButton? = null
+
     /// 设置类实例
     private val settings = SettingsState.instance
 
@@ -53,22 +64,11 @@ class Configurable : SearchableConfigurable {
             }
 
             group(Language.message("settings.group.server")) {
-                val status = try {
-                    Process.findServer()
-                    Language.message("settings.server.install")
-                } catch (_: Exception) {
-                    Language.message("settings.server.uninstall")
-                }
                 row {
-                    label(status)
-                    val text = if (status == Language.message("settings.server.install")) {
-                        Language.message("settings.server.button.reinstall")
-                    } else {
-                        Language.message("settings.server.button.install")
-                    }
-                    button(text) {
-                        TaskMgr.submit("InstallServer") { Process.installServer() }
-                    }
+                    label(getServerStatusText()).applyToComponent { serverLabel = this }
+                    button(getServerButtonText()) {
+                        startInstallServer()
+                    }.applyToComponent { serverButton = this }
                 }
             }
         }
@@ -91,5 +91,62 @@ class Configurable : SearchableConfigurable {
     /// 控制面板销毁方法
     override fun disposeUIResources() {
         settingsPanel = null
+    }
+
+    private fun startInstallServer() {
+        val btn = serverButton ?: return
+        btn.isEnabled = false // 禁用按钮 防止多次点击
+        // 创建 Task 对象 同时禁用其他设置更改
+        val task = object : Task.Modal(null, Language.message("server.download.tittle"), true) {
+            // 任务函数
+            override fun run(indicator: ProgressIndicator) {
+                // 设置进度条的不确定状态
+                indicator.isIndeterminate = true
+                indicator.text = Language.message("server.download.start")
+                Process.installServer(indicator)
+            }
+
+            // UI 线程 任务成功完成后自动调用
+            override fun onSuccess() {
+                // 恢复按钮状态
+                btn.isEnabled = true
+                // 更新 UI 文字
+                serverLabel?.text = getServerStatusText()
+                serverButton?.text = getServerButtonText()
+                Messages.showInfoMessage(
+                    Language.message("server.download.success"),
+                    Language.message("server.download.tittle")
+                )
+            }
+
+            // UI 线程 任务发生异常时自动调用
+            override fun onThrowable(error: Throwable) {
+                btn.isEnabled = true
+                Messages.showErrorDialog(
+                    Language.message("server.download.error", error.toString()),
+                    Language.message("server.download.tittle")
+                )
+            }
+        }
+        // 提交给 ProgressManager 执行
+        ProgressManager.getInstance().run(task)
+    }
+
+    private fun getServerStatusText(): String {
+        return try {
+            Process.findServer()
+            Language.message("settings.server.install")
+        } catch (_: Exception) {
+            Language.message("settings.server.uninstall")
+        }
+    }
+
+    private fun getServerButtonText(): String {
+        return try {
+            Process.findServer()
+            Language.message("settings.server.button.reinstall")
+        } catch (_: Exception) {
+            Language.message("settings.server.button.install")
+        }
     }
 }
