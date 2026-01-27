@@ -9,7 +9,6 @@ import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import io.github.stellardeca.lazyime.core.lib.MethodMode
-import io.github.stellardeca.lazyime.core.task.TaskMgr
 import io.github.stellardeca.lazyime.server.Process
 import javax.swing.JButton
 import javax.swing.JComponent

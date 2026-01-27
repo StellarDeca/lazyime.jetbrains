@@ -32,7 +32,10 @@ class LazyimeProjectService : Disposable {
                         notifyInfo("lazyime.startFailed", e)
                     }
                 }
-            } finally {
+                try {
+                    Server.exit()
+                } catch (_: Exception) {
+                }
                 TaskMgr.shutdown()
             }
         }
