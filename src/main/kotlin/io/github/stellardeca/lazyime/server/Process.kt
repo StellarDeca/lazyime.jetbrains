@@ -12,7 +12,7 @@ import java.nio.file.Path
 import com.intellij.util.io.HttpRequests
 import java.nio.file.Files
 
-private const val PLUGIN_ID = "io.github.stellardeca.lazyime"
+private const val PLUGIN_ID = "io.github.StellarDeca.lazyime"
 private const val SERVER_NAME = "LazyInputSwitcher"
 
 class ServerStartException(message: String) : RuntimeException(message)
