@@ -21,7 +21,7 @@ repositories {
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
 dependencies {
     intellijPlatform {
-        intellijIdea("2025.2.4")  // 指定开发 SDK 版本
+        intellijIdea("2024.2.4")  // 指定开发 SDK 版本
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
         // Add plugin dependencies for compilation here:
         bundledPlugin("org.jetbrains.kotlin")  // 引入 jetbrains kotlin 依赖
