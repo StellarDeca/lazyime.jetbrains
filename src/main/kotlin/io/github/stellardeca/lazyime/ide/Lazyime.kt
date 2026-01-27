@@ -1,42 +1,52 @@
 package io.github.stellardeca.lazyime.ide
 
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
 import io.github.stellardeca.lazyime.core.task.TaskMgr
 import io.github.stellardeca.lazyime.server.Server
 import io.github.stellardeca.lazyime.server.Process
 import io.github.stellardeca.lazyime.server.ServerNotFoundException
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
+import io.github.stellardeca.lazyime.ide.settings.Language
+import kotlinx.coroutines.runBlocking
 
 @Service(Service.Level.PROJECT)
 class LazyimeProjectService : Disposable {
-    init {
-        // 注册服务
+    private val notificationGroupId = "io.github.stellardeca.lazyime.jetbrains.notification"
 
+    init {
         // 启动服务
-        TaskMgr.submit {
+        TaskMgr.submit("LazyimeProjectInit") {
             try {
                 val port = Process.runServer()
                 Server.init(port)
             } catch (e: Exception) {
-                // 弹窗 通知 server 启动失败
                 when (e) {
+                    /// 通知用户 安装 server
                     is ServerNotFoundException -> {
-                        /// 通知用户 安装 server
-                        notifyWarning("server.notfound", e)
+                        notifyInfo("lazyime.server.notfound")
                     }
-
+                    /// 通知用户 lazyime 插件启动失败
                     else -> {
-                        /// 通知用户 lazyime 插件启动失败
-                        notifyWarning("lazyime.startFailed", e)
+                        notifyInfo("lazyime.startFailed", e)
                     }
                 }
+            } finally {
+                TaskMgr.shutdown()
             }
         }
     }
 
-    override fun dispose() {
-        TaskMgr.submit { Server.exit() }
+    override fun dispose() = runBlocking {
+        TaskMgr.submit("LazyimeProjectExit") { Server.exit() }
+    }
+
+    /// Info 弹窗 通知
+    private fun notifyInfo(key: String, vararg params: Any?) {
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup(notificationGroupId)
+            .createNotification(Language.message(key, params), NotificationType.INFORMATION)
+            .notify(null)
     }
 }

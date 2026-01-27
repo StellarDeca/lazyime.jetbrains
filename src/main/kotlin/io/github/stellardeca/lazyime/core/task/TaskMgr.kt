@@ -4,6 +4,7 @@ import io.github.stellardeca.lazyime.core.log.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -12,6 +13,9 @@ import kotlin.coroutines.cancellation.CancellationException
 
 /// 任务调度器 确保任务顺序执行
 object TaskMgr {
+    /// 任务管理器声明周期标志
+    private var running = true
+
     /// 协程环境 + 允许子任务崩溃 + 单线程单实例运行
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO.limitedParallelism(1))
 
@@ -29,11 +33,23 @@ object TaskMgr {
         scope.launch { workerLoop() }
     }
 
+    /// 关闭任务执行器
+    fun shutdown() {
+        // 不再接受新任务并关闭 worker
+        running = false
+        scope.launch {
+            mutex.withLock { pendingTasks.clear() }
+        }
+        scope.cancel(CancellationException("TaskMgr shutdown"))
+        signal.close()
+    }
+
     /// 任务提交方法
     // 直接在 ui 线程中可以直接调用
     fun submit(name: String, task: suspend () -> Unit) {
         // 在协程 线程中进行 任务 提交操作
         // 防止 worker 与 submit 静态
+        if (!running) return
         scope.launch {
             mutex.withLock {
                 // 如果任务已存在，
@@ -46,7 +62,6 @@ object TaskMgr {
             signal.trySend(Unit)
         }
     }
-
 
     private suspend fun workerLoop() {
         // 无信号时自动挂起

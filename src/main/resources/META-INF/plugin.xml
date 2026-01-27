@@ -13,8 +13,13 @@
         <applicationConfigurable
                 instance="io.github.stellardeca.lazyime.ide.settings.Configurable"
                 id="io.github.stellardeca.lazyime.settings"
-                displayName="Lazyime"
+                bundle="messages.MyBundle" key="application.configurable.lazyime.tittle"
         />
+        <notificationGroup
+                id="io.github.stellardeca.lazyime.jetbrains.notification"
+                displayType="BALLOON"
+                isLogByDefault="true"
+                bundle="messages.MyBundle" key="notification.group.lazyime.tittle"/>
     </extensions>
     <projectListeners>
         <listener class="io.github.stellardeca.lazyime.ide.toolwindow.ToolWindowsListener"
