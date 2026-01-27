@@ -21,6 +21,7 @@ class EditorListener : EditorFactoryListener {
             // 绑定 project 生命周期
             editor.caretModel.addCaretListener(CursorListener(), service)
             editor.document.addDocumentListener(DocumentListener(project, editor), service)
+            editor.addEditorMouseListener(MouseListener(), service)
         }
     }
 }
