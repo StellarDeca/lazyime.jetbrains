@@ -8,6 +8,7 @@ import io.github.stellardeca.lazyime.server.Process
 import io.github.stellardeca.lazyime.server.ServerNotFoundException
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.Disposable
+import io.github.stellardeca.lazyime.core.log.Logger
 import io.github.stellardeca.lazyime.ide.settings.Language
 import kotlinx.coroutines.runBlocking
 
@@ -21,15 +22,18 @@ class LazyimeProjectService : Disposable {
             try {
                 val port = Process.runServer()
                 Server.init(port)
+                Logger.info("LazyimeProject init, server port: $port")
             } catch (e: Exception) {
                 when (e) {
                     /// 通知用户 安装 server
                     is ServerNotFoundException -> {
                         notifyInfo("lazyime.server.notfound")
+                        Logger.warn("lazyime.server not found", e)
                     }
                     /// 通知用户 lazyime 插件启动失败
                     else -> {
                         notifyInfo("lazyime.startFailed", e)
+                        Logger.error("lazyime.startFailed", e)
                     }
                 }
                 try {
