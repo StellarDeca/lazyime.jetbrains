@@ -1,6 +1,29 @@
-<idea-plugin>
-    <id>io.github.stellardeca.lazyime</id>
+<idea-plugin url="https://github.com/StellarDeca/lazyime.jetbrains">
+    <id>io.github.StellarDeca.lazyime.jetbrains</id>
     <name>Lazyime</name>
+    <version>0.1.0</version>
     <vendor email="166920291+StellarDeca@users.noreply.github.com" url="https://github.com/StellarDeca">StellarDeca
     </vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <editorFactoryListener implementation="io.github.stellardeca.lazyime.ide.editor.EditorListener"/>
+        <applicationService serviceImplementation="io.github.stellardeca.lazyime.ide.settings.SettingsState"/>
+
+        <applicationConfigurable
+                instance="io.github.stellardeca.lazyime.ide.settings.Configurable"
+                id="io.github.stellardeca.lazyime.settings"
+                bundle="messages.MyBundle" key="application.configurable.lazyime.tittle"
+        />
+        <notificationGroup
+                id="io.github.stellardeca.lazyime.jetbrains.notification"
+                displayType="BALLOON"
+                isLogByDefault="true"
+                bundle="messages.MyBundle" key="notification.group.lazyime.tittle"/>
+    </extensions>
+    <projectListeners>
+        <listener class="io.github.stellardeca.lazyime.ide.toolwindow.ToolWindowsListener"
+                  topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
+    </projectListeners>
 </idea-plugin>
