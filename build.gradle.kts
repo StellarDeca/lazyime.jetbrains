@@ -1,12 +1,15 @@
+import org.jetbrains.changelog.markdownToHTML
+
 plugins {
     id("java")  // 引入 java 环境
     id("org.jetbrains.kotlin.jvm") version "2.1.20"  // 指定 kotlin 编译器版本
     id("org.jetbrains.intellij.platform") version "2.10.2"  // 引入 jetbrains 插件
     kotlin("plugin.serialization") version "2.1.20"
+    id("org.jetbrains.changelog") version "2.2.1" // 引入 Changelog 插件
 }
 
-group = "io.github.stellardeca"
-version = "1.0-SNAPSHOT"
+group = "io.github.StellarDeca.lazyime.jetbrains"
+version = "0.1.0"
 
 repositories {
     // 仓库配置
@@ -36,8 +39,20 @@ intellijPlatform {
             untilBuild = null  // 不限制最高版本
         }
 
+        // 自动从 readme 中提取 description 注入到 plugin.xml
+        description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
+            val start = ""
+            val end = ""
+            with(it.lines()) {
+                if (!containsAll(listOf(start, end))) {
+                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
+                }
+                subList(indexOf(start) + 1, indexOf(end)).joinToString("\n").let(::markdownToHTML)
+            }
+        }
+
         changeNotes = """
-            Initial version
+            Stable release tested with 2026.1
         """.trimIndent()
     }
 }
@@ -57,4 +72,9 @@ kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
+}
+
+changelog {
+    groups.empty()
+    repositoryUrl = "https://github.com/StellarDeca/lazyime.jetbrains"
 }

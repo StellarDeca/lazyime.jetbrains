@@ -1,1 +1,1 @@
-rootProject.name = "lazyime"
+rootProject.name = "lazyime.jetbrains"

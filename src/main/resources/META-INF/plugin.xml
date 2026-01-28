@@ -1,6 +1,7 @@
-<idea-plugin>
+<idea-plugin url="https://github.com/StellarDeca/lazyime.jetbrains">
     <id>io.github.StellarDeca.lazyime.jetbrains</id>
-    <name>lazyime</name>
+    <name>Lazyime</name>
+    <version>0.1.0</version>
     <vendor email="166920291+StellarDeca@users.noreply.github.com" url="https://github.com/StellarDeca">StellarDeca
     </vendor>
 
