@@ -1,12 +1,7 @@
 <div align="center">
-    <img src="https://www.google.com/search?q=https://plugins.jetbrains.com/files/26088/587974/icon/pluginIcon.svg" width="128" height="128" alt="Lazyime Logo">
     <h1>Lazyime</h1>
     <p><strong>智能感知上下文，自动切换输入法</strong></p>
     <p>基于 Tree-sitter 语法分析 | 适配 JetBrains 全家桶 | 低延迟体验</p>
-    <p>
-        <a href="https://www.google.com/search?q=https://github.com/StellarDeca/LazyInputSwitcher">服务端仓库 (LazyInputSwitcher)</a> |
-        <a href="https://plugins.jetbrains.com">插件主页</a>
-    </p>
 </div>
 
 ## **✨ 简介**
@@ -64,18 +59,17 @@
 
 ### **Windows**
 
-* **支持**：微软拼音输入法 (简体中文, 美国英语)。
+* **支持**：微软拼音输入法 (默认支持: 简体中文, 美国英语)。
 * **注意**：受限于 Windows 安全机制，系统中必须安装 **至少两种** 语言的键盘布局（例如：中文 \+ 英文），切换功能才能正常工作。
-  * *服务端默认配置*：“英语(美国)”键盘布局 与 “微软拼音”
 
 ### **Linux**
 
-* **支持**：Fcitx5 输入法框架 (rime, pinyin , keyboard-us)。
+* **支持**：Fcitx5 输入法框架 (默认支持: rime, pinyin , keyboard-us)。
 * **注意**：如果自动下载的二进制文件无法运行，请检查插件 bin 目录下文件的执行权限 (chmod \+x)。
 
 ### **macOS**
 
-* **支持**：系统默认输入法 (ABC / 简体拼音)。
+* **支持**：系统默认输入法 (默认支持: ABC / 简体拼音)。
 * **注意**：
   * 自动安装的可执行文件可能因安全策略无法直接运行。
   * **解决方案**：建议手动编译 Rust 服务端，或前往插件安装目录的 bin 文件夹下，通过终端赋予可执行权限，并在“安全性与隐私”中允许运行。
@@ -84,14 +78,23 @@
 
 如果你使用的输入法不在上述预定义列表中
 
-你需要克隆服务端仓库，修改对应平台的源码中预定义的输入法 **ID** 或 **字符串**
+你需要克隆[服务端仓库](https://github.com/StellarDeca/LazyInputSwitcher)，修改对应平台的源码中预定义的输入法 **ID** 或 *
+*字符串**
 
 * src/switch/
-  * windows mod.rs: NATIVE_LANGUAGE_ID
-  * linux fcitx5.rs: NATIVE_METHOD
-  * macos mod.rs: NATIVE_LANGUAGE_ID
+  * /windows/mod.rs: NATIVE_LANGUAGE_ID
+  * /linux/fcitx5.rs: NATIVE_METHOD
+  * /macos/mod.rs: NATIVE_LANGUAGE_ID
 
-并重新编译服务端替换插件目录下的文件。
+并重新编译服务端替换插件 bin 目录下的文件。
+
+## 💖 贡献者
+
+<div align="center">
+    <a href="https://github.com/StellarDeca/lazyime.jetbrains/graphs/contributors">
+        <img src="https://contrib.rocks/image?repo=StellarDeca/lazyime.jetbrains"  alt="Authors"/>
+    </a>
+</div>
 
 ## **🔗 链接**
 
