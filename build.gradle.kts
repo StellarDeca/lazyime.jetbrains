@@ -24,7 +24,7 @@ repositories {
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
 dependencies {
     intellijPlatform {
-        intellijIdea("2024.2.4")  // 指定开发 SDK 版本
+        intellijIdea("2025.2.4")  // 指定开发 SDK 版本
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
         // Add plugin dependencies for compilation here:
         bundledPlugin("org.jetbrains.kotlin")  // 引入 jetbrains kotlin 依赖
@@ -41,19 +41,19 @@ intellijPlatform {
 
         // 自动从 readme 中提取 description 注入到 plugin.xml
         description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
-            val start = ""
-            val end = ""
-            with(it.lines()) {
-                if (!containsAll(listOf(start, end))) {
-                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
-                }
-                subList(indexOf(start) + 1, indexOf(end)).joinToString("\n").let(::markdownToHTML)
-            }
+            markdownToHTML(it)
         }
 
         changeNotes = """
             Stable release tested with 2026.1
         """.trimIndent()
+    }
+
+    /// 兼容性检查
+    pluginVerification {
+        ides {
+            recommended()
+        }
     }
 }
 
