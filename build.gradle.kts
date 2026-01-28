@@ -41,7 +41,14 @@ intellijPlatform {
 
         // 自动从 readme 中提取 description 注入到 plugin.xml
         description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
-            markdownToHTML(it)
+            val englishDescription = """
+                Lazyime is an intelligent Input Method Editor (IME) switcher for JetBrains IDEs.<br/>
+                It leverages Tree-sitter for real-time syntax analysis to automatically switch between 
+                English and your native language based on the cursor context (Code vs. Comment).
+                It also switches automatically when using the IDE tool window.
+                <br/><br/>
+            """.trimIndent()
+            englishDescription + markdownToHTML(it)
         }
 
         changeNotes = """
