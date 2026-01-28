@@ -66,6 +66,14 @@ tasks {
     buildSearchableOptions {
         enabled = false
     }
+
+    // 证书 与 签名
+    signPlugin {
+        val certFile = project.rootProject.file("chain.crt")
+        val keyFile = project.rootProject.file("private.pem")
+        certificateChain.set(certFile.readText())
+        privateKey.set(keyFile.readText())
+    }
 }
 
 kotlin {

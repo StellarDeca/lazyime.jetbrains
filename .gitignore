@@ -41,3 +41,7 @@ bin/
 .DS_Store
 # 项目排除路径
 /.intellijPlatform/
+
+# 项目证书 与 私钥
+*.crt
+*.pem
