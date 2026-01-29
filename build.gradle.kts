@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.StellarDeca.lazyime.jetbrains"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     // 仓库配置
@@ -52,6 +52,8 @@ intellijPlatform {
         }
 
         changeNotes = """
+            Added Server crash monitoring
+            Add new arm64 judge method
             Stable release tested with 2026.1
         """.trimIndent()
     }
