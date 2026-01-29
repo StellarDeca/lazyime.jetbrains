@@ -78,8 +78,7 @@
 
 如果你使用的输入法不在上述预定义列表中
 
-你需要克隆[服务端仓库](https://github.com/StellarDeca/LazyInputSwitcher)，修改对应平台的源码中预定义的输入法 **ID** 或 *
-*字符串**
+你需要克隆[服务端仓库](https://github.com/StellarDeca/LazyInputSwitcher)，修改对应平台的源码中预定义的输入法 **ID** 或 **字符串**
 
 * src/switch/
   * /windows/mod.rs: NATIVE_LANGUAGE_ID
