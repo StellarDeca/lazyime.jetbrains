@@ -12,6 +12,7 @@ import java.nio.file.Path
 import com.intellij.util.io.HttpRequests
 import java.nio.file.Files
 import kotlin.concurrent.thread
+import com.intellij.util.system.CpuArch
 
 private const val PLUGIN_ID = "io.github.StellarDeca.lazyime.jetbrains"
 private const val SERVER_NAME = "LazyInputSwitcher"
@@ -64,8 +65,8 @@ object Process {
     fun installServer(indicator: ProgressIndicator?) {
         val name = when {
             SystemInfo.isWindows -> "windows-x86_64.zip"
-            SystemInfo.isMac && SystemInfo.isAarch64 -> "macos-arm64.tar.gz"
-            SystemInfo.isMac && !SystemInfo.isAarch64 -> "macos-intel-x86_64.tar.gz"
+            SystemInfo.isMac && CpuArch.isArm64() -> "macos-arm64.tar.gz"
+            SystemInfo.isMac && !CpuArch.isArm64() -> "macos-intel-x86_64.tar.gz"
             else -> "linux-x86_64.tar.gz"
         }
         val url = "https://github.com/StellarDeca/LazyInputSwitcher/releases/latest/download/$name"
