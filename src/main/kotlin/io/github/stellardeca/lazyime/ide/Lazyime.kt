@@ -18,35 +18,45 @@ class LazyimeProjectService : Disposable {
 
     init {
         // 启动服务
-        TaskMgr.submit("LazyimeProjectInit") {
-            try {
-                val port = Process.runServer()
-                Server.init(port)
-                Logger.info("LazyimeProject init, server port: $port")
-            } catch (e: Exception) {
-                when (e) {
-                    /// 通知用户 安装 server
-                    is ServerNotFoundException -> {
-                        notifyInfo("lazyime.server.notfound")
-                        Logger.warn("lazyime.server not found", e)
-                    }
-                    /// 通知用户 lazyime 插件启动失败
-                    else -> {
-                        notifyInfo("lazyime.startFailed", e)
-                        Logger.error("lazyime.startFailed", e)
-                    }
-                }
-                try {
-                    Server.exit()
-                } catch (_: Exception) {
-                }
-                TaskMgr.shutdown()
-            }
-        }
+        TaskMgr.submit("LazyimeProjectInit") { initServer() }
     }
 
     override fun dispose() = runBlocking {
         TaskMgr.submit("LazyimeProjectExit") { Server.exit() }
+    }
+
+    private suspend fun initServer() {
+        try {
+            val port = Process.runServer { err ->
+                NotificationGroupManager.getInstance()
+                    .getNotificationGroup(notificationGroupId)
+                    .createNotification(Language.message("lazyime.server.run_error", err), NotificationType.ERROR)
+                    .notify(null)
+                Logger.error("lazyime server panic $err")
+                println("lazyime server panic $err")
+                TaskMgr.shutdown()  // 关闭服务
+            }
+            Server.init(port)
+            Logger.info("LazyimeProject init, server port: $port")
+        } catch (e: Exception) {
+            when (e) {
+                /// 通知用户 安装 server
+                is ServerNotFoundException -> {
+                    notifyInfo("lazyime.server.notfound")
+                    Logger.warn("lazyime server not found", e)
+                }
+                /// 通知用户 lazyime 插件启动失败
+                else -> {
+                    notifyInfo("lazyime.startFailed", e)
+                    Logger.error("lazyime server start failed", e)
+                }
+            }
+            try {
+                Server.exit()
+            } catch (_: Exception) {
+            }
+            TaskMgr.shutdown()
+        }
     }
 
     /// Info 弹窗 通知

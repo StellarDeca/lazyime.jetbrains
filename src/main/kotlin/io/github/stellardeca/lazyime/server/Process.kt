@@ -11,6 +11,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import java.nio.file.Path
 import com.intellij.util.io.HttpRequests
 import java.nio.file.Files
+import kotlin.concurrent.thread
 
 private const val PLUGIN_ID = "io.github.StellarDeca.lazyime.jetbrains"
 private const val SERVER_NAME = "LazyInputSwitcher"
@@ -20,19 +21,29 @@ class ServerNotFoundException(message: String) : RuntimeException(message)
 
 object Process {
 
-    suspend fun runServer(): Int = withContext(Dispatchers.IO) {
+    suspend fun runServer(stderr: (String) -> Unit): Int = withContext(Dispatchers.IO) {
         val path = findServer()
 
         val process = try {
-            ProcessBuilder(path.toString())
-                .redirectErrorStream(true)
-                .start()
+            // 分开处理 stdout 与 stderr
+            ProcessBuilder(path.toString()).start()
         } catch (e: Exception) {
             throw ServerStartException("$e")
         }
 
-        val reader = process.inputStream.bufferedReader()
+        /// 启动 额外线程监听 stderr 用于捕获 server 错误
+        thread(start = true, isDaemon = true, name = "LazyIME-Stderr-Watcher") {
+            try {
+                process.errorStream.bufferedReader().use { reader ->
+                    val err = reader.readText()
+                    stderr(err)
+                }
+            } catch (_: Exception) {
+                // 进程关闭时流断开是正常的，忽略异常
+            }
+        }
 
+        val reader = process.inputStream.bufferedReader()
         val port = withTimeoutOrNull(5_000) {
             reader.readLine()?.trim()?.toIntOrNull()
         } ?: run {
