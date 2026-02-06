@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.event.EditorMouseListener
 import io.github.stellardeca.lazyime.core.lib.GrammarMode
 import io.github.stellardeca.lazyime.core.lib.MethodMode
 import io.github.stellardeca.lazyime.core.task.TaskMgr
+import io.github.stellardeca.lazyime.ide.Global
 import io.github.stellardeca.lazyime.server.Server
 
 class MouseListener : EditorMouseListener {
@@ -28,11 +29,15 @@ class MouseListener : EditorMouseListener {
         TaskMgr.submit("DocumentListener") {
             /// 仅仅在 grammar 变化时 对输入法进行切换
             val grammar = Server.analyze(code, lang, cursor)
-            val method = when (grammar) {
-                GrammarMode.Code -> MethodMode.English
-                GrammarMode.Comment -> MethodMode.Native
+            if (grammar != Global.grammarMode) {
+                val method = when (grammar) {
+                    GrammarMode.Code -> MethodMode.English
+                    GrammarMode.Comment -> MethodMode.Native
+                }
+                Server.methodOnly(method)
+                Global.grammarMode = grammar
+                Global.methodMode = method
             }
-            Server.methodOnly(method)
         }
     }
 }

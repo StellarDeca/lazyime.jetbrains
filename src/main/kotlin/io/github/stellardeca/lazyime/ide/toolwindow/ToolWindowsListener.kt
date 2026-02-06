@@ -6,6 +6,7 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import io.github.stellardeca.lazyime.core.lib.MethodMode
 import io.github.stellardeca.lazyime.core.task.TaskMgr
+import io.github.stellardeca.lazyime.ide.Global
 import io.github.stellardeca.lazyime.ide.settings.SettingsState
 import io.github.stellardeca.lazyime.server.Server
 
@@ -18,7 +19,11 @@ class ToolWindowsListener : ToolWindowManagerListener {
         project.getService(LazyimeProjectService::class.java)
         TaskMgr.submit("ToolWindowsListenerShown") {
             val target = getSetting(toolWindow.id)
-            target?.let { Server.methodOnly(it) }
+            target?.let {
+                Server.methodOnly(it)
+                Global.grammarMode = null
+                Global.methodMode = it
+            }
         }
     }
 

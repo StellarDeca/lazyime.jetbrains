@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.EditorKind
 import io.github.stellardeca.lazyime.core.lib.GrammarMode
 import io.github.stellardeca.lazyime.core.lib.MethodMode
 import io.github.stellardeca.lazyime.core.task.TaskMgr
+import io.github.stellardeca.lazyime.ide.Global
 import io.github.stellardeca.lazyime.server.Server
 
 class DocumentListener(
@@ -23,7 +24,6 @@ class DocumentListener(
             return
         }
         // 添加 输入状态检查 如果存在 ime 合成表则 不做出切换
-        // 同时增添 内联提示 状态判断
         val composition = editor.getUserData(COMPOSITION_KEY)
 
         // 处理文本变更
@@ -34,12 +34,18 @@ class DocumentListener(
         TaskMgr.submit("DocumentListener") {
             /// 仅仅在 grammar 变化时 对输入法进行切换
             val grammar = Server.analyze(code, lang, cursor)
-            val method = when (grammar) {
-                GrammarMode.Code -> MethodMode.English
-                GrammarMode.Comment -> MethodMode.Native
+            if (composition?.isComposing() == true) {
+                Global.grammarMode = grammar
+                return@submit
             }
-            if (composition?.isComposing() != true) {
+            if (grammar != Global.grammarMode) {
+                val method = when (grammar) {
+                    GrammarMode.Code -> MethodMode.English
+                    GrammarMode.Comment -> MethodMode.Native
+                }
                 Server.methodOnly(method)
+                Global.grammarMode = grammar
+                Global.methodMode = method
             }
         }
     }
