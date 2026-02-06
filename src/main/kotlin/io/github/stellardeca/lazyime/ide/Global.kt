@@ -6,5 +6,5 @@ import io.github.stellardeca.lazyime.core.lib.*
 /// 生命周期 绑定到 lazyime
 object Global {
     var grammarMode: GrammarMode? = null
-    var methodMode: MethodMode = MethodMode.English
+    var methodMode: MethodMode? = null
 }

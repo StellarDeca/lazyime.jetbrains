@@ -11,6 +11,7 @@ import io.github.stellardeca.lazyime.core.lib.MethodMode
 import io.github.stellardeca.lazyime.core.task.TaskMgr
 import io.github.stellardeca.lazyime.ide.Global
 import io.github.stellardeca.lazyime.server.Server
+import kotlinx.coroutines.delay
 
 class DocumentListener(
     private val project: Project,
@@ -31,21 +32,29 @@ class DocumentListener(
         val code = doc.text
         val lang = getLanguage(project, doc)
         val cursor = getCursor(editor)
-        TaskMgr.submit("DocumentListener") {
-            /// 仅仅在 grammar 变化时 对输入法进行切换
-            val grammar = Server.analyze(code, lang, cursor)
-            if (composition?.isComposing() == true) {
-                Global.grammarMode = grammar
+        TaskMgr.submit("CursorListener") {
+            // 仅仅在 语法状态变化 并且 不存在 Ime 候选框下 切换状态
+            val currentGrammar = Server.analyze(code, lang, cursor)
+            val previousGrammar = Global.grammarMode
+            Global.grammarMode = currentGrammar  // 更新状态
+
+            if (currentGrammar == previousGrammar) {
                 return@submit
             }
-            if (grammar != Global.grammarMode) {
-                val method = when (grammar) {
+            // 延迟 10 ms 以等待 Ime 候选窗口 信息同步
+            delay(10)
+            if (composition?.isComposing() != true) {
+                val targetMethod = when (currentGrammar) {
                     GrammarMode.Code -> MethodMode.English
                     GrammarMode.Comment -> MethodMode.Native
                 }
-                Server.methodOnly(method)
-                Global.grammarMode = grammar
-                Global.methodMode = method
+                try {
+                    Server.methodOnly(targetMethod)
+                    Global.methodMode = targetMethod
+                } catch (e: Throwable) {
+                    Global.methodMode = null
+                    throw e
+                }
             }
         }
     }
