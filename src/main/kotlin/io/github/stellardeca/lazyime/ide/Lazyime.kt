@@ -33,7 +33,6 @@ class LazyimeProjectService : Disposable {
                     .createNotification(Language.message("lazyime.server.run_error", err), NotificationType.ERROR)
                     .notify(null)
                 Logger.error("lazyime server panic $err")
-                println("lazyime server panic $err")
                 TaskMgr.shutdown()  // 关闭服务
             }
             Server.init(port)
