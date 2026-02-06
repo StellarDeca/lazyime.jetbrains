@@ -16,26 +16,15 @@ fun getLanguage(project: Project, document: Document): String {
 /// 获取编辑器 光标 不支持多光标
 fun getCursor(editor: Editor): Cursor {
     val document = editor.document
-    val pos = editor.caretModel.primaryCaret.logicalPosition
+    val caret = editor.caretModel.primaryCaret
 
-    val row = pos.line
-    val charColumn = pos.column
-
-    // 获取当前行的 字符起始偏移
-    // 计算光标在本行内的字符跨度
-    val lineStartOffset = document.getLineStartOffset(row)
-    val lineEndOffset = document.getLineEndOffset(row)
-    val lengthInLine = charColumn.coerceAtMost(lineEndOffset - lineStartOffset)
-
-    // 获取该行光标前的字符串
+    val offset = caret.offset
+    val line = document.getLineNumber(offset)
+    val lineStartOffset = document.getLineStartOffset(line)
     val linePrefix = document.getText(
-        TextRange(
-            lineStartOffset,
-            lineStartOffset + lengthInLine
-        )
+        TextRange(lineStartOffset, offset)
     )
 
-    // 转为 UTF-8 字节数组并获取大小
-    val byteColumn = linePrefix.toByteArray(Charsets.UTF_8).size
-    return Cursor(row, byteColumn)
+    val column = linePrefix.toByteArray(io.ktor.utils.io.charsets.Charsets.UTF_8).size
+    return Cursor(line, column)
 }

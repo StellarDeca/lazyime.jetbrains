@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.StellarDeca.lazyime.jetbrains"
-version = "0.1.1"
+version = "0.1.2"
 
 repositories {
     // 仓库配置
@@ -52,9 +52,13 @@ intellijPlatform {
         }
 
         changeNotes = """
-            Added Server crash monitoring
-            Add new arm64 judge method
-            Stable release tested with 2026.1
+            Fixed a bug where input could not be stabilized in trailing comments<br>
+            Add Update the input method only when the syntax state changes<br>
+            Add input synthesis checks to avoid input interruptions<br>
+            Exclude responses to non-primary and inactive editors<br>
+            Fix comments analysis errors caused by tabs<br>
+            Added Server crash monitoring<br>
+            Add new arm64 judge method<br>
         """.trimIndent()
     }
 
