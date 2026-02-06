@@ -22,6 +22,9 @@ class DocumentListener(
         if (!editor.contentComponent.hasFocus() || editor.editorKind != EditorKind.MAIN_EDITOR) {
             return
         }
+        // 添加 输入状态检查 如果存在 ime 合成表则 不做出切换
+        // 同时增添 内联提示 状态判断
+        val composition = editor.getUserData(COMPOSITION_KEY)
 
         // 处理文本变更
         // 在 ui 线程中 准备数据
@@ -35,7 +38,9 @@ class DocumentListener(
                 GrammarMode.Code -> MethodMode.English
                 GrammarMode.Comment -> MethodMode.Native
             }
-            Server.methodOnly(method)
+            if (composition?.isComposing() != true) {
+                Server.methodOnly(method)
+            }
         }
     }
 }

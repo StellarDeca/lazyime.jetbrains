@@ -20,6 +20,8 @@ class CursorListener : CaretListener {
         if (!editor.contentComponent.hasFocus() || editor.editorKind != EditorKind.MAIN_EDITOR) {
             return
         }
+        // 添加 输入状态检查 检查 ime 合成表状态
+        val composition = editor.getUserData(COMPOSITION_KEY)
 
         // 在 ui 线程中 准备数据
         val code = doc.text
@@ -33,7 +35,9 @@ class CursorListener : CaretListener {
                 GrammarMode.Code -> MethodMode.English
                 GrammarMode.Comment -> MethodMode.Native
             }
-            Server.methodOnly(method)
+            if (composition?.isComposing() != true) {
+                Server.methodOnly(method)
+            }
         }
     }
 }
