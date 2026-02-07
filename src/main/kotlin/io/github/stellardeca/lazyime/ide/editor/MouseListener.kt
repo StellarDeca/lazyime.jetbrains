@@ -29,14 +29,18 @@ class MouseListener : EditorMouseListener {
         TaskMgr.submit("DocumentListener") {
             /// 仅仅在 grammar 变化时 对输入法进行切换
             val grammar = Server.analyze(code, lang, cursor)
-            if (grammar != Global.grammarMode) {
-                val method = when (grammar) {
-                    GrammarMode.Code -> MethodMode.English
-                    GrammarMode.Comment -> MethodMode.Native
-                }
+            val method = when (grammar) {
+                GrammarMode.Code -> MethodMode.English
+                GrammarMode.Comment -> MethodMode.Native
+            }
+            try {
                 Server.methodOnly(method)
                 Global.grammarMode = grammar
                 Global.methodMode = method
+            } catch (e: Throwable) {
+                Global.grammarMode = null
+                Global.methodMode = null
+                throw e
             }
         }
     }

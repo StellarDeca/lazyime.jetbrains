@@ -20,9 +20,15 @@ class ToolWindowsListener : ToolWindowManagerListener {
         TaskMgr.submit("ToolWindowsListenerShown") {
             val target = getSetting(toolWindow.id)
             target?.let {
-                Server.methodOnly(it)
-                Global.grammarMode = null
-                Global.methodMode = it
+                try {
+                    Server.methodOnly(it)
+                    Global.methodMode = it
+                } catch (e: Exception) {
+                    Global.methodMode = null
+                    throw e
+                } finally {
+                    Global.grammarMode = null
+                }
             }
         }
     }

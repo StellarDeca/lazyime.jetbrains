@@ -32,7 +32,13 @@ class CursorListener : CaretListener {
 
         TaskMgr.submit("CursorListener") {
             // 仅仅在 语法状态变化 并且 不存在 Ime 候选框下 切换状态
-            val currentGrammar = Server.analyze(code, lang, cursor)
+            val currentGrammar = try {
+                Server.analyze(code, lang, cursor)
+            } catch (e: Exception) {
+                Global.grammarMode = null
+                Global.methodMode = null
+                throw e
+            }
             val previousGrammar = Global.grammarMode
             Global.grammarMode = currentGrammar  // 更新状态
 
@@ -50,6 +56,7 @@ class CursorListener : CaretListener {
                     Server.methodOnly(targetMethod)
                     Global.methodMode = targetMethod
                 } catch (e: Throwable) {
+                    Global.grammarMode = null
                     Global.methodMode = null
                     throw e
                 }
