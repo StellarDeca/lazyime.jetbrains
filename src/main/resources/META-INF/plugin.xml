@@ -27,4 +27,9 @@
         <listener class="io.github.stellardeca.lazyime.ide.toolwindow.ToolWindowsListener"
                   topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
     </projectListeners>
+
+    <applicationListeners>
+        <listener class="io.github.stellardeca.lazyime.ide.focus.FocusListener"
+                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+    </applicationListeners>
 </idea-plugin>

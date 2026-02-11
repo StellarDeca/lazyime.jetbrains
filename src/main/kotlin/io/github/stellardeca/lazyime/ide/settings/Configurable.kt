@@ -64,6 +64,32 @@ class Configurable : SearchableConfigurable {
                 }
             }
 
+            group(Language.message("settings.group.focus")) {
+                val rows = listOf(
+                    "settings.focus.gained" to settings::ideFocusGainedMethod,
+                    "settings.focus.lose" to settings::ideFocusLoseMethod
+                )
+                for ((labelKey, prop) in rows) {
+                    row(Language.message(labelKey)) {
+                        comboBox(
+                            items = listOf(null) + MethodMode.entries,
+                            renderer = SimpleListCellRenderer.create(Language.message("method.null")) { mode ->
+                                when (mode) {
+                                    MethodMode.Native -> Language.message("method.native")
+                                    MethodMode.English -> Language.message("method.english")
+                                    else -> Language.message("method.null")
+                                }
+                            }
+                        ).bindItem(
+                            getter = { prop.get() },
+                            setter = {
+                                it.let { value -> prop.set(value) }
+                            }
+                        )
+                    }
+                }
+            }
+
             group(Language.message("settings.group.server")) {
                 row {
                     label(getServerStatusText()).applyToComponent { serverLabel = this }

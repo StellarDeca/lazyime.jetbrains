@@ -17,6 +17,10 @@ class SettingsState : PersistentStateComponent<SettingsState> {
     var commitWindowMethod: MethodMode = MethodMode.English
     var terminalWindowMethod: MethodMode = MethodMode.English
 
+    /// IDE 焦点行为设置
+    var ideFocusGainedMethod: MethodMode? = null
+    var ideFocusLoseMethod: MethodMode? = MethodMode.Native
+
     /// 获取 设置 插件加载时 Ide 自动调用
     override fun getState(): SettingsState = this
 
