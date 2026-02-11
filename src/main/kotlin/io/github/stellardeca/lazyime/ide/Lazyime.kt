@@ -12,8 +12,8 @@ import io.github.stellardeca.lazyime.core.log.Logger
 import io.github.stellardeca.lazyime.ide.settings.Language
 import kotlinx.coroutines.runBlocking
 
-@Service(Service.Level.PROJECT)
-class LazyimeProjectService : Disposable {
+@Service(Service.Level.APP)
+class LazyimeAppService : Disposable {
     private val notificationGroupId = "io.github.stellardeca.lazyime.jetbrains.notification"
 
     init {
@@ -27,16 +27,16 @@ class LazyimeProjectService : Disposable {
 
     private suspend fun initServer() {
         try {
-            val port = Process.runServer { err ->
-                NotificationGroupManager.getInstance()
-                    .getNotificationGroup(notificationGroupId)
-                    .createNotification(Language.message("lazyime.server.run_error", err), NotificationType.ERROR)
-                    .notify(null)
-                Logger.error("lazyime server panic $err")
-                TaskMgr.shutdown()  // 关闭服务
-            }
-            Server.init(port)
-            Logger.info("LazyimeProject init, server port: $port")
+//            val port = Process.runServer { err ->
+//                NotificationGroupManager.getInstance()
+//                    .getNotificationGroup(notificationGroupId)
+//                    .createNotification(Language.message("lazyime.server.run_error", err), NotificationType.ERROR)
+//                    .notify(null)
+//                Logger.error("lazyime server panic $err")
+//                TaskMgr.shutdown()  // 关闭服务
+//            }
+            Server.init(25565)
+//            Logger.info("LazyimeProject init, server port: $port")
         } catch (e: Exception) {
             when (e) {
                 /// 通知用户 安装 server
@@ -66,3 +66,5 @@ class LazyimeProjectService : Disposable {
             .notify(null)
     }
 }
+
+

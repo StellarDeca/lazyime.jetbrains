@@ -8,6 +8,7 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="io.github.stellardeca.lazyime.ide.project.LazyimeProjectStartup"/>
         <editorFactoryListener implementation="io.github.stellardeca.lazyime.ide.editor.EditorListener"/>
         <applicationService serviceImplementation="io.github.stellardeca.lazyime.ide.settings.SettingsState"/>
 

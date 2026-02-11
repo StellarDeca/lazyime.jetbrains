@@ -1,6 +1,5 @@
 package io.github.stellardeca.lazyime.ide.toolwindow
 
-import io.github.stellardeca.lazyime.ide.LazyimeProjectService
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
@@ -14,9 +13,6 @@ import io.github.stellardeca.lazyime.server.Server
 class ToolWindowsListener : ToolWindowManagerListener {
     override fun toolWindowShown(toolWindow: ToolWindow) {
         // window 初始化时 输入法切换到指定输入法
-        // 获取 service 保证初始化完成
-        val project = toolWindow.project
-        project.getService(LazyimeProjectService::class.java)
         TaskMgr.submit("ToolWindowsListenerShown") {
             val target = getSetting(toolWindow.id)
             target?.let {

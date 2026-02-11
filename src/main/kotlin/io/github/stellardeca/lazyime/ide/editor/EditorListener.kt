@@ -1,6 +1,6 @@
 package io.github.stellardeca.lazyime.ide.editor
 
-import io.github.stellardeca.lazyime.ide.LazyimeProjectService
+import io.github.stellardeca.lazyime.ide.project.LazyimeProjectService
 import com.intellij.openapi.editor.EditorKind
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
@@ -15,7 +15,7 @@ class EditorListener : EditorFactoryListener {
         val editor = event.editor
         val project = editor.project ?: return
 
-        // 实例化 service
+        // 获取 项目级别服务实例
         val service = project.getService(LazyimeProjectService::class.java)
 
         // 必须是主编辑器 有文件 有项目
