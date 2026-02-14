@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.StellarDeca.lazyime.jetbrains"
-version = "0.1.2"
+version = "0.1.3"
 
 repositories {
     // 仓库配置
@@ -52,6 +52,17 @@ intellijPlatform {
         }
 
         changeNotes = """
+            添加IDE焦点设置和监听（由于windows安全策略，Ide失焦输入法切换大概率失败）<br>
+            增加多项目支持<br>
+            修复了尾随注释导致输入打断的bug<br>
+            添加：只有当语法状态发生变化时才更新输入法<br>
+            添加输入合成检查以避免输入中断<br>
+            排除对非主要编辑和非活跃编辑者的响应<br>
+            修复由制表符引起的注释分析错误<br>
+            新增服务器崩溃监控<br>
+            添加新的arm64法官方法<br><br>
+            Add ide focus settings and listener(Due to Windows security policy, there is a high probability that IDE out-of-focus input method switching will fail)<br>
+            Add multi project support<br>
             Fixed a bug where input could not be stabilized in trailing comments<br>
             Add Update the input method only when the syntax state changes<br>
             Add input synthesis checks to avoid input interruptions<br>
